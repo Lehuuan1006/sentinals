@@ -40,6 +40,10 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
       // Lưu token vào StorageUtils
       await StorageUtils.instance.setString(key: 'token', val: token);
       log('Token | $token');
+      await StorageUtils.instance
+          .setString(key: 'saved_email', val: event.email);
+      await StorageUtils.instance
+          .setString(key: 'save_password', val: event.password);
       // Lấy thông tin người dùng từ Firestore
       final userDoc = await _firestore
           .collection('users')
@@ -53,7 +57,8 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
         await StorageUtils.instance.setString(key: 'user_role', val: userRole);
 
         // Đăng nhập thành công
-        emit(SignInSuccess(userId: userCredential.user!.uid, userRole: userRole));
+        emit(SignInSuccess(
+            userId: userCredential.user!.uid, userRole: userRole));
       } else {
         emit(SignInFailure('Người dùng không tồn tại'));
       }

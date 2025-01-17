@@ -19,36 +19,37 @@ class GetInforProfileBloc
   }
 
   Future<void> _onGetProfileInfo(
-  GetProfileInfo event,
-  Emitter<GetInforProfileState> emit,
-) async {
-  emit(GetInforProfileLoading()); // Bắt đầu loading
-  // log('Fetching profile for userId: ${event.userId}'); 
+    GetProfileInfo event,
+    Emitter<GetInforProfileState> emit,
+  ) async {
+    emit(GetInforProfileLoading()); // Bắt đầu loading
+    // log('Fetching profile for userId: ${event.userId}');
 
-  try {
-    // Lấy thông tin người dùng từ Firestore
-    final userDoc = await _firestore.collection('users').doc(event.userId).get();
+    try {
+      // Lấy thông tin người dùng từ Firestore
+      final userDoc =
+          await _firestore.collection('users').doc(event.userId).get();
 
-    if (userDoc.exists) {
-      final userData = userDoc.data() as Map<String, dynamic>;
-      // log('User Data: $userData'); 
+      if (userDoc.exists) {
+        final userData = userDoc.data() as Map<String, dynamic>;
+        // log('User Data: $userData');
 
-      // Phát ra trạng thái thành công
-      emit(GetInforProfileSuccess(
-        contactName: userData['contactName'] as String? ?? '',
-        email: userData['email'] as String? ?? '',
-        phoneNumber: userData['phoneNumber'] as String? ?? '',
-        profileImage: userData['profileImage'] as String? ?? '',
-        role: userData['role'] as String? ?? '',
-      ));
-    } else {
-      emit(GetInforProfileFailure('Người dùng không tồn tại'));
-      log('GetInforProfileFailure 1: User document does not exist for userId: ${event.userId}');
+        // Phát ra trạng thái thành công
+        emit(GetInforProfileSuccess(
+          contactName: userData['contactName'] as String? ?? '',
+          email: userData['email'] as String? ?? '',
+          phoneNumber: userData['phoneNumber'] as String? ?? '',
+          profileImage: userData['profileImage'] as String? ?? '',
+          role: userData['role'] as String? ?? '',
+        ));
+      } else {
+        emit(GetInforProfileFailure('Người dùng không tồn tại'));
+        log('GetInforProfileFailure 1: User document does not exist for userId: ${event.userId}');
+      }
+    } catch (e) {
+      // Phát ra trạng thái thất bại nếu có lỗi
+      emit(GetInforProfileFailure('Lỗi khi lấy thông tin: $e'));
+      log('GetInforProfileFailure 2: $e');
     }
-  } catch (e) {
-    // Phát ra trạng thái thất bại nếu có lỗi
-    emit(GetInforProfileFailure('Lỗi khi lấy thông tin: $e'));
-    log('GetInforProfileFailure 2: $e');
   }
-}
 }

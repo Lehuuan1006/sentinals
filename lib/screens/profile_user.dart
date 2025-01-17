@@ -33,7 +33,7 @@ class _ProfileUserScreenState extends State<ProfileUserScreen> {
   List<String> menuMyAccountTitle = [
     "Thông tin tài khoản",
     "Đổi mật khẩu",
-    "Face ID"
+    "Biometric Login",
   ];
 
   List menuMyAccountIcon = [Icons.people, Icons.lock, Icons.face];
@@ -303,7 +303,7 @@ Future<void> getInforUser() async {
                                         ),
                                         index ==
                                                 menuMyAccountTitle
-                                                    .indexOf("Face ID")
+                                                    .indexOf("Biometric Login")
                                             ? Transform.scale(
                                                 scale:
                                                     0.8, // Adjust the scale factor as needed

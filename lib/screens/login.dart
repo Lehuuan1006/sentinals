@@ -1,9 +1,13 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:lottie/lottie.dart';
 import 'package:sentinal/bloc/signin/signin_bloc.dart';
 import 'package:sentinal/router/index.dart';
@@ -12,6 +16,12 @@ import 'package:sentinal/widgets/button_app.dart';
 import 'package:sentinal/widgets/custom_dialog.dart';
 import 'package:sentinal/widgets/custom_form.dart';
 import 'package:sentinal/widgets/text_app.dart';
+
+enum _SupportState {
+  unknown,
+  supported,
+  unsupported,
+}
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -24,19 +34,139 @@ class _LoginScreenState extends State<LoginScreen> {
   final userController = TextEditingController();
   final passwordController = TextEditingController();
   final _formSignInKey = GlobalKey<FormState>();
+  _SupportState _supportState = _SupportState.unknown;
+  final LocalAuthentication auth = LocalAuthentication();
+  String imageBiometric = 'assets/svg/face_ID.svg';
+  String _authorized = 'Chưa xác thực';
+  bool _isAuthenticating = false;
 
   bool rememberPassword = true;
   bool policy = true;
   bool passwordVisible = false;
   bool agreeWithCondition = true;
 
-  Future<void> handleLogin() async {
-    // BlocProvider.of<SignInBloc>(context).add(
-    //   SignInButtonPressed(
-    //     email: userController.text,
-    //     password: passwordController.text,
-    //   ),
-    // );
+  @override
+  void dispose() {
+    super.dispose();
+    userController.clear();
+    passwordController.clear();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    checkDevice();
+    auth.isDeviceSupported().then(
+          (bool isSupported) => setState(() => _supportState = isSupported
+              ? _SupportState.supported
+              : _SupportState.unsupported),
+        );
+  }
+
+  void checkDevice() {
+    if (!mounted) {
+      return;
+    }
+    if (Platform.isAndroid) {
+      setState(() {
+        imageBiometric = 'assets/svg/android_fingerprint.svg';
+      });
+    } else if (Platform.isIOS) {
+      setState(() {
+        imageBiometric = 'assets/svg/face_ID.svg';
+      });
+    }
+  }
+
+  Future<void> _authenticate() async {
+    bool authenticated = false;
+    final List<BiometricType> availableBiometrics =
+        await auth.getAvailableBiometrics();
+
+    if (availableBiometrics.isNotEmpty) {
+      // Some biometrics are enrolled.
+      log("TYPE Biometric isNotEmpty");
+    }
+    if (availableBiometrics.contains(BiometricType.strong)) {
+      log("TYPE Biometric strong");
+    }
+    if (availableBiometrics.contains(BiometricType.face)) {
+      log("TYPE Biometric face");
+      if (!mounted) {
+        return;
+      }
+      if (Platform.isAndroid) {
+        setState(() {
+          imageBiometric = 'assets/svg/android_face.svg';
+        });
+      } else if (Platform.isIOS) {
+        setState(() {
+          imageBiometric = 'assets/svg/face_ID.svg';
+        });
+      }
+    }
+    if (availableBiometrics.contains(BiometricType.fingerprint)) {
+      log("TYPE Biometric fingerprint");
+      if (!mounted) {
+        return;
+      }
+      if (Platform.isAndroid) {
+        setState(() {
+          imageBiometric = 'assets/svg/android_fingerprint.svg';
+        });
+      } else if (Platform.isIOS) {
+        setState(() {
+          imageBiometric = 'assets/svg/touch_ID.svg';
+        });
+      }
+    }
+    try {
+      mounted
+          ? setState(() {
+              _isAuthenticating = true;
+              _authorized = 'Đang xác thực';
+            })
+          : null;
+      authenticated = await auth.authenticate(
+        localizedReason: 'Xác thực danh tính của bạn',
+        options: const AuthenticationOptions(
+          stickyAuth: true,
+        ),
+      );
+      setState(() {
+        _isAuthenticating = false;
+      });
+    } on PlatformException catch (e) {
+      mounted
+          ? setState(() {
+              _isAuthenticating = false;
+              _authorized = 'Error - ${e.message}';
+            })
+          : null;
+      return;
+    }
+    if (!mounted) {
+      return;
+    }
+
+    setState(() =>
+        _authorized = authenticated ? 'Đã xác thực' : 'Xác thực thất bại');
+        log('authenticated: $authenticated');
+    if (authenticated) {
+      final String emailSaved =
+          StorageUtils.instance.getString(key: 'email_login_autofill')!;
+      final String passwordSaved =
+          StorageUtils.instance.getString(key: 'password_login_autofill')!;
+
+      context.read<SignInBloc>().add(
+            SignInButtonPressed(
+              email: emailSaved,
+              password: passwordSaved,
+            ),
+          );
+    } else {
+      log("Authentication failed");
+    }
   }
 
   @override
@@ -87,7 +217,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Form(
                 key: _formSignInKey,
                 child: Padding(
-                  padding: EdgeInsets.only(left: 5.w, right: 5.w),
+                  padding: EdgeInsets.only(left: 15.w, right: 15.w),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -249,31 +379,125 @@ class _LoginScreenState extends State<LoginScreen> {
                           ],
                         ),
                       ),
-                      ButtonApp(
-                        text: 'Đăng nhập',
-                        fontsize: 16.sp,
-                        fontWeight: FontWeight.bold,
-                        colorText: Theme.of(context).colorScheme.background,
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                        outlineColor: Theme.of(context).colorScheme.primary,
-                        event: () {
-                          if (_formSignInKey.currentState!.validate() &&
-                              agreeWithCondition) {
-                            context.read<SignInBloc>().add(
-                                  SignInButtonPressed(
-                                    email: userController.text,
-                                    password: passwordController.text,
+                      _supportState == _SupportState.supported
+                          ? SizedBox(
+                              width: 1.sw,
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: SizedBox(
+                                        height: 50.h,
+                                        child: ButtonApp(
+                                          text: 'Đăng nhập',
+                                          fontsize: 16.sp,
+                                          fontWeight: FontWeight.bold,
+                                          colorText: Theme.of(context)
+                                              .colorScheme
+                                              .background,
+                                          backgroundColor: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                          outlineColor: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                          event: () {
+                                            if (_formSignInKey.currentState!
+                                                    .validate() &&
+                                                agreeWithCondition) {
+                                              final username =
+                                                  userController.text;
+                                              final password =
+                                                  passwordController.text;
+                                              context.read<SignInBloc>().add(
+                                                    SignInButtonPressed(
+                                                      email: username,
+                                                      password: password,
+                                                    ),
+                                                  );
+                                            } else if (!agreeWithCondition) {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                const SnackBar(
+                                                    content: Text(
+                                                        'Vui lòng tuân thủ điều khoản của Kango Express')),
+                                              );
+                                            }
+                                          },
+                                        )),
                                   ),
-                                );
-                          } else if (!agreeWithCondition) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text(
-                                      'Vui lòng tuân thủ điều khoản của SENTINAL')),
-                            );
-                          }
-                        },
-                      ),
+                                  SizedBox(
+                                    width: 10.w,
+                                  ),
+                                  InkWell(
+                                    onTap: () {
+                                      final String? emailSaved =
+                                          StorageUtils.instance.getString(
+                                              key: 'email_login_autofill');
+                                      final String? passwordSaved =
+                                          StorageUtils.instance.getString(
+                                              key: 'password_login_autofill');
+                                      if (emailSaved != null &&
+                                          passwordSaved != null) {
+                                        _authenticate();
+                                      } else {
+                                        showCustomDialogModal(
+                                            context:
+                                                navigatorKey.currentContext!,
+                                            textDesc:
+                                                "Bạn cần đăng nhập trước để có thể mở tính năng này",
+                                            title: "Thông báo",
+                                            colorButtonOk: Colors.blue,
+                                            btnOKText: "Xác nhận",
+                                            typeDialog: "info",
+                                            eventButtonOKPress: () {},
+                                            isTwoButton: false);
+                                      }
+                                    },
+                                    child: SizedBox(
+                                      width: 50.h,
+                                      height: 50.h,
+                                      child: SvgPicture.asset(
+                                        imageBiometric,
+                                        fit: BoxFit.contain,
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            )
+                          : SizedBox(
+                              width: 1.sw,
+                              height: 50.h,
+                              child: ButtonApp(
+                                text: 'Đăng nhập',
+                                fontsize: 16.sp,
+                                fontWeight: FontWeight.bold,
+                                colorText:
+                                    Theme.of(context).colorScheme.background,
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.primary,
+                                outlineColor:
+                                    Theme.of(context).colorScheme.primary,
+                                event: () {
+                                  if (_formSignInKey.currentState!.validate() &&
+                                      agreeWithCondition) {
+                                    final username = userController.text;
+                                    final password = passwordController.text;
+                                    context.read<SignInBloc>().add(
+                                          SignInButtonPressed(
+                                            email: username,
+                                            password: password,
+                                          ),
+                                        );
+                                  } else if (!agreeWithCondition) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text(
+                                              'Vui lòng tuân thủ điều khoản của Kango Express')),
+                                    );
+                                  }
+                                },
+                              )),
                       SizedBox(height: 20.h),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
