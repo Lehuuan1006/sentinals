@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # sentinal
 
 A new Flutter project.
@@ -16,5 +15,3 @@ For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
 =======
-# sentinal
->>>>>>> dbdf0190e75b6a4575576e6d5f0e4ae1cdb8e4ca
