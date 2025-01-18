@@ -15,7 +15,7 @@ import 'dart:typed_data';
 import 'dart:math' as math;
 
 import 'package:lottie/lottie.dart';
-import 'package:sentinal/bloc/get_infor_profile%20copy/update_infor_profile_bloc.dart';
+import 'package:sentinal/bloc/update_infor_profile/update_infor_profile_bloc.dart';
 import 'package:sentinal/bloc/get_infor_profile/get_infor_profile_bloc.dart';
 import 'package:sentinal/router/index.dart';
 import 'package:sentinal/utils/stogares.dart';

@@ -10,6 +10,7 @@ import 'package:lottie/lottie.dart';
 import 'package:sentinal/bloc/logout/logout_bloc.dart';
 import 'package:sentinal/bloc/get_infor_profile/get_infor_profile_bloc.dart';
 import 'package:sentinal/router/index.dart';
+import 'package:sentinal/screens/change_password.dart';
 import 'package:sentinal/screens/edit_profile.dart';
 import 'package:sentinal/utils/stogares.dart';
 import 'package:sentinal/widgets/custom_dialog.dart';
@@ -40,20 +41,20 @@ class _ProfileUserScreenState extends State<ProfileUserScreen> {
 
   final List<void Function(BuildContext)> menuMyAccountActions = [
     (context) {
-      print("EditProfileScreen tapped");
+      log("EditProfileScreen tapped");
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const EditProfileScreen()),
       );
     },
     (context) {
-      print("Change Password tapped");
+      log("Change Password tapped");
       Navigator.push(context,
-          MaterialPageRoute(builder: (context) => const EditProfileScreen()));
+          MaterialPageRoute(builder: (context) => const ChangePasswordScreen()));
     },
     (context) {
       // Action for "Face ID"
-      print("Face ID tapped");
+      log("Face ID tapped");
     },
   ];
   void turnOnFaceID() async {

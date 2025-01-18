@@ -419,7 +419,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                                   .showSnackBar(
                                                 const SnackBar(
                                                     content: Text(
-                                                        'Vui lòng tuân thủ điều khoản của Kango Express')),
+                                                        'Vui lòng tuân thủ điều khoản của SENTINAL')),
                                               );
                                             }
                                           },
@@ -493,7 +493,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
                                           content: Text(
-                                              'Vui lòng tuân thủ điều khoản của Kango Express')),
+                                              'Vui lòng tuân thủ điều khoản của SENTINAL')),
                                     );
                                   }
                                 },
