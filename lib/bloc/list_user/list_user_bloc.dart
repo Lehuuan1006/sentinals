@@ -15,26 +15,30 @@ class ListUserBloc extends Bloc<ListUserEvent, ListUserState> {
   }
 
   Future<void> _onFetchListUser(
-    FetchListUser event,
-    Emitter<ListUserState> emit,
-  ) async {
-    emit(ListUserStateLoading());
+  FetchListUser event,
+  Emitter<ListUserState> emit,
+) async {
+  emit(ListUserStateLoading());
 
-    try {
-      final querySnapshot =
-          await _firestore.collection('users').limit(10).get();
+  try {
+    final querySnapshot = await _firestore.collection('users').limit(10).get();
 
-      final users = querySnapshot.docs.map((doc) => doc.data()).toList();
+    // Thêm Document ID vào dữ liệu của mỗi user
+    final users = querySnapshot.docs.map((doc) {
+      final data = doc.data() as Map<String, dynamic>; // Lấy dữ liệu từ DocumentSnapshot
+      data['id'] = doc.id; // Thêm Document ID vào dữ liệu
+      return data;
+    }).toList();
 
-      emit(ListUserStateSuccess(
-        data: users,
-        page: 1,
-        hasReachedMax: users.length < 10,
-      ));
-    } catch (error) {
-      emit(ListUserStateFailure(message: error.toString()));
-    }
+    emit(ListUserStateSuccess(
+      data: users,
+      page: 1,
+      hasReachedMax: users.length < 10,
+    ));
+  } catch (error) {
+    emit(ListUserStateFailure(message: error.toString()));
   }
+}
 
   Future<void> _onLoadMoreListUser(
     LoadMoreListUser event,

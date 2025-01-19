@@ -9,6 +9,7 @@ import 'package:sentinal/screens/home.dart';
 import 'package:sentinal/screens/list_user.dart';
 import 'package:sentinal/screens/notifications.dart';
 import 'package:sentinal/screens/profile_user.dart';
+import 'package:sentinal/screens/users_manager_screen.dart';
 import 'package:sentinal/utils/stogares.dart';
 import 'package:sentinal/widgets/custom_dialog.dart';
 import 'package:sentinal/widgets/text_app.dart';
@@ -79,7 +80,7 @@ class _IndexHomeState extends State<IndexHome> {
           // Chuyển hướng đến màn hình ListUserScreen khi nhấn nút
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const ListUserScreen()),
+            MaterialPageRoute(builder: (context) => const ManageUser()),
           );
         },
         child: Container(
