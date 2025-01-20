@@ -62,11 +62,11 @@ class ListUserBloc extends Bloc<ListUserEvent, ListUserState> {
             .startAfterDocument(lastDocument);
 
         // Áp dụng từ khóa tìm kiếm nếu có
-        if (currentState.searchQuery.isNotEmpty) {
-          query = query
-              .where('role', isGreaterThanOrEqualTo: currentState.searchQuery)
-              .where('role', isLessThan: currentState.searchQuery + 'z');
-        }
+        if (event.query.isNotEmpty) {
+        query = query
+            .where('role', isGreaterThanOrEqualTo: event.query)
+            .where('role', isLessThan: event.query + 'z');
+      }
 
         final querySnapshot = await query.get();
 
@@ -100,12 +100,12 @@ class ListUserBloc extends Bloc<ListUserEvent, ListUserState> {
     try {
       final querySnapshot = await _firestore
           .collection('users')
+          .where('role', isNotEqualTo: null)
           .where('role',
               isGreaterThanOrEqualTo:
-                  event.query.toString()) // Chuyển đổi sang String
-          .where('role', isLessThan: event.query.toString() + 'z')
+                  event.query) // Chuyển đổi sang String
+          .where('role', isLessThan: event.query + 'z')
           .get();
-
       final users = querySnapshot.docs.map((doc) {
         final data = doc.data() as Map<String, dynamic>;
         data['id'] = doc.id;

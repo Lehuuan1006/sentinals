@@ -11,11 +11,12 @@ class FetchListUser extends ListUserEvent {}
 
 class LoadMoreListUser extends ListUserEvent {
   final int page;
+  final String query; // Thêm trường query
 
-  const LoadMoreListUser(this.page);
+  const LoadMoreListUser(this.page, this.query); 
 
   @override
-  List<Object> get props => [page];
+  List<Object> get props => [page, query]; 
 }
 
 class SearchListUser extends ListUserEvent {

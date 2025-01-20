@@ -45,12 +45,18 @@ dev_dependencies:
 
 
 flutter:
-
-
+  generate: true
   uses-material-design: true
   assets:
     - assets/images/
     - assets/lotties/
     - assets/svg/
+  fonts:
+    - family: Icomoon
+      fonts:
+        - asset: assets/fonts/icomoon.ttf
+    - family: OpenSans
+      fonts:
+        - asset: assets/fonts/OpenSans.ttf
 
 

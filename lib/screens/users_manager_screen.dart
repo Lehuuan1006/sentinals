@@ -90,7 +90,10 @@ class _ManageUserState extends State<ManageUser>
       if (currentState is ListUserStateSuccess && !currentState.hasReachedMax) {
         // Gọi sự kiện LoadMoreListUser với page hiện tại + 1
         BlocProvider.of<ListUserBloc>(context).add(
-          LoadMoreListUser(currentState.page + 1),
+          LoadMoreListUser(
+            currentState.page + 1,
+            currentState.searchQuery,
+          ),
         );
       }
     }
@@ -258,7 +261,8 @@ class _ManageUserState extends State<ManageUser>
                                             BorderRadius.circular(8.r),
                                       ),
                                       isDense: true,
-                                      hintText: "Tìm kiếm: $searchMethod",
+                                      hintText:
+                                          "Tìm kiếm theo Role: $searchMethod",
                                       contentPadding: const EdgeInsets.all(15),
                                     ),
                                     onFieldSubmitted: (value) {
@@ -475,7 +479,7 @@ class _ManageUserState extends State<ManageUser>
                 eventConfirm: () {
                   Navigator.pop(context);
                 },
-                errorText: 'Failed to fetch users: ${state.message}',
+                errorText: 'Failed to fetch users',
               );
             }
             return const Center(child: NoDataFoundWidget());

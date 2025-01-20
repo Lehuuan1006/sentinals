@@ -168,7 +168,7 @@ class ErrorDialog extends StatelessWidget {
           Center(
             child: SizedBox(
               width: 300.w,
-              height: 150.w,
+              height: 200.w,
               child: Lottie.asset('assets/lotties/error_dialog.json',
                   fit: BoxFit.fill),
             ),
