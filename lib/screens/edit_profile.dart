@@ -470,6 +470,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                               height: 10.h,
                                             ),
                                             CustomTextFormField(
+                                              keyboardType: TextInputType.number,
                                                 validator: (value) {
                                                   if (value == null ||
                                                       value.isEmpty) {

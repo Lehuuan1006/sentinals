@@ -12,33 +12,35 @@ class ListUserBloc extends Bloc<ListUserEvent, ListUserState> {
   ListUserBloc() : super(ListUserStateInitial()) {
     on<FetchListUser>(_onFetchListUser);
     on<LoadMoreListUser>(_onLoadMoreListUser);
+    on<SearchListUser>(
+        _onSearchListUser); // Đăng ký trình xử lý sự kiện SearchListUser
   }
 
   Future<void> _onFetchListUser(
-  FetchListUser event,
-  Emitter<ListUserState> emit,
-) async {
-  emit(ListUserStateLoading());
+    FetchListUser event,
+    Emitter<ListUserState> emit,
+  ) async {
+    emit(ListUserStateLoading());
 
-  try {
-    final querySnapshot = await _firestore.collection('users').limit(10).get();
+    try {
+      final querySnapshot =
+          await _firestore.collection('users').limit(10).get();
 
-    // Thêm Document ID vào dữ liệu của mỗi user
-    final users = querySnapshot.docs.map((doc) {
-      final data = doc.data() as Map<String, dynamic>; // Lấy dữ liệu từ DocumentSnapshot
-      data['id'] = doc.id; // Thêm Document ID vào dữ liệu
-      return data;
-    }).toList();
+      final users = querySnapshot.docs.map((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        data['id'] = doc.id;
+        return data;
+      }).toList();
 
-    emit(ListUserStateSuccess(
-      data: users,
-      page: 1,
-      hasReachedMax: users.length < 10,
-    ));
-  } catch (error) {
-    emit(ListUserStateFailure(message: error.toString()));
+      emit(ListUserStateSuccess(
+        data: users,
+        page: 1,
+        hasReachedMax: users.length < 10,
+      ));
+    } catch (error) {
+      emit(ListUserStateFailure(message: error.toString()));
+    }
   }
-}
 
   Future<void> _onLoadMoreListUser(
     LoadMoreListUser event,
@@ -49,20 +51,30 @@ class ListUserBloc extends Bloc<ListUserEvent, ListUserState> {
       final currentState = state as ListUserStateSuccess;
 
       try {
-        // Lấy DocumentSnapshot của document cuối cùng trong danh sách hiện tại
         final lastDocument = await _firestore
             .collection('users')
             .doc(currentState.data.last['id'])
             .get();
 
-        // Sử dụng lastDocument để load thêm dữ liệu
-        final querySnapshot = await _firestore
+        Query query = _firestore
             .collection('users')
             .limit(10)
-            .startAfterDocument(lastDocument) // Sử dụng DocumentSnapshot
-            .get();
+            .startAfterDocument(lastDocument);
 
-        final users = querySnapshot.docs.map((doc) => doc.data()).toList();
+        // Áp dụng từ khóa tìm kiếm nếu có
+        if (currentState.searchQuery.isNotEmpty) {
+          query = query
+              .where('role', isGreaterThanOrEqualTo: currentState.searchQuery)
+              .where('role', isLessThan: currentState.searchQuery + 'z');
+        }
+
+        final querySnapshot = await query.get();
+
+        final users = querySnapshot.docs.map((doc) {
+          final data = doc.data() as Map<String, dynamic>;
+          data['id'] = doc.id;
+          return data;
+        }).toList();
 
         emit(users.isEmpty
             ? currentState.copyWith(hasReachedMax: true)
@@ -70,10 +82,45 @@ class ListUserBloc extends Bloc<ListUserEvent, ListUserState> {
                 data: currentState.data + users,
                 page: currentState.page + 1,
                 hasReachedMax: users.length < 10,
+                searchQuery:
+                    currentState.searchQuery, // Giữ nguyên từ khóa tìm kiếm
               ));
       } catch (error) {
         emit(ListUserStateFailure(message: error.toString()));
       }
+    }
+  }
+
+  Future<void> _onSearchListUser(
+    SearchListUser event,
+    Emitter<ListUserState> emit,
+  ) async {
+    emit(ListUserStateLoading());
+
+    try {
+      final querySnapshot = await _firestore
+          .collection('users')
+          .where('role',
+              isGreaterThanOrEqualTo:
+                  event.query.toString()) // Chuyển đổi sang String
+          .where('role', isLessThan: event.query.toString() + 'z')
+          .get();
+
+      final users = querySnapshot.docs.map((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        data['id'] = doc.id;
+        return data;
+      }).toList();
+
+      emit(ListUserStateSuccess(
+        data: users,
+        page: 1,
+        hasReachedMax: users.length < 10,
+        searchQuery: event.query, // Lưu từ khóa tìm kiếm
+      ));
+    } catch (error) {
+      log('Error details: $error');
+      emit(ListUserStateFailure(message: error.toString()));
     }
   }
 }

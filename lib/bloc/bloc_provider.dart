@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sentinal/bloc/change_password/change_password_bloc.dart';
+import 'package:sentinal/bloc/get_infor_users/get_infor_users_bloc.dart';
 import 'package:sentinal/bloc/list_user/list_user_bloc.dart';
 import 'package:sentinal/bloc/request_delete_user/request_delete_user_bloc.dart';
 import 'package:sentinal/bloc/update_infor_profile/update_infor_profile_bloc.dart';
@@ -25,6 +26,7 @@ class AppBlocProvider extends StatelessWidget {
         BlocProvider(create: (_) => SignUpBloc()),
         BlocProvider(create: (_) => LogoutBloc()),
         BlocProvider(create: (_) => GetInforProfileBloc()),
+        BlocProvider(create: (_) => GetUsersProfileBloc()),
         BlocProvider(create: (_) => UpdateProfileBloc()),
         BlocProvider(create: (_) => ChangePasswordBloc()),
         BlocProvider(create: (_) => ListUserBloc()),

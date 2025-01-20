@@ -17,3 +17,12 @@ class LoadMoreListUser extends ListUserEvent {
   @override
   List<Object> get props => [page];
 }
+
+class SearchListUser extends ListUserEvent {
+  final String query;
+
+  const SearchListUser(this.query);
+
+  @override
+  List<Object> get props => [query];
+}

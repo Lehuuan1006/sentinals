@@ -102,17 +102,6 @@ class _ManageUserState extends State<ManageUser>
     textSearchController.clear();
   }
 
-  void searchProduct(String query) {
-    // if (mounted) {
-    //   setState(() {
-    //     this.query = query;
-    //   });
-
-    //   // Gọi sự kiện FetchListUser để tải lại danh sách user với từ khóa tìm kiếm
-    //   BlocProvider.of<ListUserBloc>(context).add(FetchListUser());
-    // }
-  }
-
   void init() async {
     // Gọi sự kiện FetchListUser để tải danh sách người dùng
     BlocProvider.of<ListUserBloc>(context).add(FetchListUser());
@@ -187,7 +176,8 @@ class _ManageUserState extends State<ManageUser>
             } else if (state is ListUserStateSuccess) {
               // Lọc danh sách người dùng dựa trên searchQuery
               final filteredUsers = state.data.where((user) {
-                final name = user['contactName']?.toString().toLowerCase() ?? '';
+                final name =
+                    user['contactName']?.toString().toLowerCase() ?? '';
                 final phoneNumber =
                     user['phoneNumber']?.toString().toLowerCase() ?? '';
                 final role = user['role']?.toString().toLowerCase() ?? '';
@@ -225,13 +215,8 @@ class _ManageUserState extends State<ManageUser>
                                       FocusManager.instance.primaryFocus
                                           ?.unfocus();
                                     },
-                                    controller: textSearchController,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        searchQuery =
-                                            value; // Cập nhật searchQuery khi người dùng nhập
-                                      });
-                                    },
+                                    controller:
+                                        textSearchController, // Sử dụng controller để lấy giá trị
                                     style: const TextStyle(
                                       fontSize: 12,
                                       color: Colors.black,
@@ -240,10 +225,19 @@ class _ManageUserState extends State<ManageUser>
                                     decoration: InputDecoration(
                                       suffixIcon: InkWell(
                                         onTap: () {
-                                          setState(() {
-                                            searchQuery = textSearchController
-                                                .text; // Cập nhật searchQuery khi nhấn nút tìm kiếm
-                                          });
+                                          // Gửi sự kiện tìm kiếm khi nhấn nút tìm kiếm
+                                          final query =
+                                              textSearchController.text;
+                                          if (query.isNotEmpty) {
+                                            BlocProvider.of<ListUserBloc>(
+                                                    context)
+                                                .add(SearchListUser(query));
+                                          } else {
+                                            // Nếu trường nhập liệu trống, tải lại danh sách ban đầu
+                                            BlocProvider.of<ListUserBloc>(
+                                                    context)
+                                                .add(FetchListUser());
+                                          }
                                         },
                                         child: const Icon(Icons.search),
                                       ),
@@ -267,6 +261,17 @@ class _ManageUserState extends State<ManageUser>
                                       hintText: "Tìm kiếm: $searchMethod",
                                       contentPadding: const EdgeInsets.all(15),
                                     ),
+                                    onFieldSubmitted: (value) {
+                                      // Gửi sự kiện tìm kiếm khi nhấn Enter
+                                      if (value.isNotEmpty) {
+                                        BlocProvider.of<ListUserBloc>(context)
+                                            .add(SearchListUser(value));
+                                      } else {
+                                        // Nếu trường nhập liệu trống, tải lại danh sách ban đầu
+                                        BlocProvider.of<ListUserBloc>(context)
+                                            .add(FetchListUser());
+                                      }
+                                    },
                                   ),
                                 ),
                                 SizedBox(
@@ -318,8 +323,9 @@ class _ManageUserState extends State<ManageUser>
                                                               onPressed:
                                                                   (context) async {
                                                                 editUser(
-                                                                    userId: user[
-                                                                        'id']);
+                                                                    userId:
+                                                                        user['id'] ??
+                                                                            '');
                                                               },
                                                               backgroundColor:
                                                                   Colors.blue,
@@ -373,9 +379,6 @@ class _ManageUserState extends State<ManageUser>
                                                         )
                                                       : null,
                                                   child: ListTile(
-                                                    onTap: () {
-                                                      // Navigate to user details screen
-                                                    },
                                                     title: Row(
                                                       children: [
                                                         Column(
@@ -467,6 +470,7 @@ class _ManageUserState extends State<ManageUser>
                 ),
               );
             } else if (state is ListUserStateFailure) {
+              log('Failed to fetch users: ${state.message}');
               return ErrorDialog(
                 eventConfirm: () {
                   Navigator.pop(context);

@@ -13,10 +13,9 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:convert'; // Để giải mã base64
 import 'dart:typed_data';
 import 'dart:math' as math;
-
 import 'package:lottie/lottie.dart';
+import 'package:sentinal/bloc/get_infor_users/get_infor_users_bloc.dart';
 import 'package:sentinal/bloc/update_infor_profile/update_infor_profile_bloc.dart';
-import 'package:sentinal/bloc/get_infor_profile/get_infor_profile_bloc.dart';
 import 'package:sentinal/router/index.dart';
 import 'package:sentinal/utils/stogares.dart';
 import 'package:sentinal/widgets/button_app.dart';
@@ -24,8 +23,15 @@ import 'package:sentinal/widgets/custom_dialog.dart';
 import 'package:sentinal/widgets/custom_form.dart';
 import 'package:sentinal/widgets/text_app.dart'; // Để chuyển đổi base64 thành Uint8List
 
+class Role {
+  final String positionName;
+  final int positionId;
+
+  Role({required this.positionName, required this.positionId});
+}
+
 class UsersProfileScreen extends StatefulWidget {
-  final String userId; 
+  final String userId;
 
   const UsersProfileScreen({super.key, required this.userId});
 
@@ -36,15 +42,16 @@ class UsersProfileScreen extends StatefulWidget {
 class _UsersProfileScreenState extends State<UsersProfileScreen> {
   final _formField1 = GlobalKey<FormState>();
   final Map<String, TextEditingController> controllers = {};
-  int? currentIndexCity;
-  int? currentIndexDistric;
-  int? currentIndexWard;
-  String? email;
-  String? role;
-  List cityList = [];
-  List districList = [];
-  List wardList = [];
 
+  String? email;
+  // String? role;
+  String? selectedRole;
+  int? currentRoleIndex;
+
+  final List<Role> role = [
+    Role(positionName: 'Admin', positionId: 1),
+    Role(positionName: 'Member', positionId: 2),
+  ];
   final ImagePicker picker = ImagePicker();
 
   bool isLoadingButton = false;
@@ -60,24 +67,24 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
     });
   }
 
-  Future<void> getInforUser() async {
+  Future<void> GetUsers() async {
     // Lấy userId được chọn từ ListUser
     final String userId = widget.userId;
 
     if (userId.isNotEmpty) {
-      // Gửi sự kiện GetProfileInfo đến GetInforProfileBloc với userId
-      context.read<GetInforProfileBloc>().add(GetProfileInfo(userId: userId));
+      // Gửi sự kiện GetProfileInfo đến GetUsersProfileBloc với userId
+      context.read<GetUsersProfileBloc>().add(GetProfileInfo(userId: userId));
     } else {
       // Xử lý trường hợp userId là null hoặc rỗng
-      log('User ID is null or empty');
+      log('User ID is null or emptyyy');
     }
   }
 
   void init() async {
-    await getInforUser();
+    await GetUsers();
   }
 
-  void handleUpdateProfile() async {
+  void handleUpdateUsers() async {
     if (_formField1.currentState!.validate()) {
       setState(() {
         isLoadingButton = true;
@@ -92,11 +99,11 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
       // Gửi sự kiện cập nhật thông tin
       context.read<UpdateProfileBloc>().add(
             UpdateProfileInfo(
-              userId: FirebaseAuth.instance.currentUser!.uid,
+              userId: widget.userId,
               contactName: controllers['contactName']!.text,
               phoneNumber: controllers['phone']!.text,
               profileImage: selectedFile ?? controllers['profileImage']!.text,
-              role: role??controllers['role']!.text,
+              role: selectedRole ?? controllers['role']!.text,
             ),
           );
 
@@ -134,12 +141,6 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Giải mã base64 thành Uint8List để hiển thị hình ảnh
-    // Uint8List? imageBytes;
-    // if (profileImage != null && profileImage!.isNotEmpty) {
-    //   imageBytes = base64Decode(profileImage!);
-    // }
-
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
@@ -159,15 +160,15 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
         ),
         body: MultiBlocListener(
           listeners: [
-            BlocListener<GetInforProfileBloc, GetInforProfileState>(
+            BlocListener<GetUsersProfileBloc, GetUsersProfileState>(
               listener: (context, state) {
-                if (state is GetInforProfileSuccess) {
+                if (state is GetUsersProfileSuccess) {
                   setState(() {
                     controllers['contactName']!.text = state.contactName;
                     email = state.email;
                     controllers['phone']!.text = state.phoneNumber;
                     controllers['profileImage']!.text = state.profileImage;
-                    role = state.role;
+                    controllers['role']!.text = state.role;
                   });
                 }
               },
@@ -187,20 +188,21 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
                 } else if (state is UpdateProfileFailure) {
                   showCustomDialogModal(
                       context: navigatorKey.currentContext!,
-                      textDesc: state.message,
+                      textDesc: "Cập nhật thông tin thất bại",
                       title: "Thông báo",
                       colorButtonOk: Colors.red,
                       btnOKText: "Xác nhận",
                       typeDialog: "error",
                       eventButtonOKPress: () {},
                       isTwoButton: false);
+                      log('Lỗi: ${state.message}');
                 }
               },
             ),
           ],
-          child: BlocBuilder<GetInforProfileBloc, GetInforProfileState>(
+          child: BlocBuilder<GetUsersProfileBloc, GetUsersProfileState>(
             builder: (context, state) {
-              if (state is GetInforProfileSuccess) {
+              if (state is GetUsersProfileSuccess) {
                 return SafeArea(
                   child: RefreshIndicator(
                     color: Theme.of(context).colorScheme.primary,
@@ -395,16 +397,73 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
                                               width: 10.w,
                                             ),
                                             Expanded(
-                                              child: Text(
-                                                role ?? '',
-                                                style: TextStyle(
-                                                  color: Colors.black,
-                                                  fontFamily: "Icomoon",
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 14.sp,
+                                              child: InkWell(
+                                                onTap: () {
+                                                  showMyCustomModalBottomSheet(
+                                                    context: context,
+                                                    itemCount: role.length,
+                                                    itemBuilder:
+                                                        (BuildContext context,
+                                                            int index) {
+                                                      return Column(
+                                                        children: [
+                                                          Padding(
+                                                            padding:
+                                                                EdgeInsets.only(
+                                                                    left: 20.w),
+                                                            child: InkWell(
+                                                              onTap: () {
+                                                                Navigator.pop(
+                                                                    context);
+                                                                setState(() {
+                                                                  controllers[
+                                                                          'role']!
+                                                                      .text = role[
+                                                                          index]
+                                                                      .positionName;
+                                                                  currentRoleIndex =
+                                                                      role[index]
+                                                                          .positionId;
+                                                                  selectedRole =
+                                                                      role[index]
+                                                                          .positionName;
+                                                                });
+                                                                log('Selected Role: $selectedRole, ID = ${role[index].positionId}');
+                                                              },
+                                                              child: Row(
+                                                                children: [
+                                                                  TextApp(
+                                                                    text: role[
+                                                                            index]
+                                                                        .positionName,
+                                                                    color: Colors
+                                                                        .black,
+                                                                    fontsize:
+                                                                        20.sp,
+                                                                  )
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          Divider(
+                                                            height: 25.h,
+                                                          ),
+                                                        ],
+                                                      );
+                                                    },
+                                                  );
+                                                },
+                                                child: Text(
+                                                  selectedRole ?? controllers['role']!.text,
+                                                  style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontFamily: "Icomoon",
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 14.sp,
+                                                  ),
                                                 ),
                                               ),
-                                            )
+                                            ),
                                           ],
                                         ),
                                         SizedBox(
@@ -453,6 +512,8 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
                                               height: 10.h,
                                             ),
                                             CustomTextFormField(
+                                                keyboardType:
+                                                    TextInputType.number,
                                                 validator: (value) {
                                                   if (value == null ||
                                                       value.isEmpty) {
@@ -509,7 +570,7 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
                                                       if (_formField1
                                                           .currentState!
                                                           .validate()) {
-                                                        handleUpdateProfile();
+                                                        handleUpdateUsers();
                                                       }
                                                     },
                                                   ),
@@ -525,7 +586,7 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
                     ),
                   ),
                 );
-              } else if (state is GetInforProfileFailure) {
+              } else if (state is GetUsersProfileFailure) {
                 return ErrorDialog(
                   eventConfirm: () {
                     Navigator.pop(context);
