@@ -15,6 +15,7 @@ import 'package:sentinal/screens/camera.dart';
 import 'package:sentinal/screens/list_user.dart';
 import 'package:sentinal/screens/notifications.dart';
 import 'package:sentinal/screens/users_manager_screen.dart';
+import 'package:sentinal/screens/users_request_delete_screen.dart';
 import 'package:sentinal/utils/stogares.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sentinal/widgets/button_app.dart';
@@ -533,7 +534,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     context,
                                                     MaterialPageRoute(
                                                       builder: (context) =>
-                                                          const CameraScreen(),
+                                                          const ManageUserRequestDelete(),
                                                     ),
                                                   );
                                                 },

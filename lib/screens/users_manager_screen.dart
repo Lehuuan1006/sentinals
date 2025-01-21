@@ -32,17 +32,13 @@ class _ManageUserState extends State<ManageUser>
   List<ExpansionTileController> expansionTileControllers = [];
   final scrollListBillController = ScrollController();
   final textSearchController = TextEditingController();
-  final searchTypeTextController = TextEditingController();
 
   String searchMethod = '...';
   String searchQuery = '';
-  String currentSearchMethod = "shipment_code";
   File? selectedImage;
   bool hasMore = false;
   final ImagePicker picker = ImagePicker();
   String? selectedFile;
-  late TabController _tabController;
-  // late SlidableController _slidableController;
   void editUser({
     required String userId,
   }) {
@@ -69,10 +65,7 @@ class _ManageUserState extends State<ManageUser>
   @override
   void initState() {
     WidgetsFlutterBinding.ensureInitialized();
-
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-    // _slidableController = SlidableController(vsync: this);
     init();
     for (int i = 0; i < 5; i++) {
       expansionTileControllers.add(ExpansionTileController());
@@ -181,12 +174,9 @@ class _ManageUserState extends State<ManageUser>
               final filteredUsers = state.data.where((user) {
                 final name =
                     user['contactName']?.toString().toLowerCase() ?? '';
-                final phoneNumber =
-                    user['phoneNumber']?.toString().toLowerCase() ?? '';
                 final role = user['role']?.toString().toLowerCase() ?? '';
 
                 return name.contains(searchQuery.toLowerCase()) ||
-                    phoneNumber.contains(searchQuery.toLowerCase()) ||
                     role.contains(searchQuery.toLowerCase());
               }).toList();
 
@@ -262,7 +252,7 @@ class _ManageUserState extends State<ManageUser>
                                       ),
                                       isDense: true,
                                       hintText:
-                                          "Tìm kiếm theo Role: $searchMethod",
+                                          "Tìm kiếm: $searchMethod",
                                       contentPadding: const EdgeInsets.all(15),
                                     ),
                                     onFieldSubmitted: (value) {
@@ -346,7 +336,7 @@ class _ManageUserState extends State<ManageUser>
                                                                       navigatorKey
                                                                           .currentContext!,
                                                                   textDesc:
-                                                                      "Bạn có chắc muốn xóa người dùng này?",
+                                                                      "Bạn có chắc muốn request xóa người dùng này?",
                                                                   title:
                                                                       "Thông báo",
                                                                   colorButtonOk:

@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 import 'package:sentinal/bloc/logout/logout_bloc.dart';
 import 'package:sentinal/bloc/get_infor_profile/get_infor_profile_bloc.dart';
+import 'package:sentinal/bloc/request_role/request_role_bloc.dart';
 import 'package:sentinal/router/index.dart';
 import 'package:sentinal/screens/change_password.dart';
 import 'package:sentinal/screens/edit_profile.dart';
@@ -113,6 +114,7 @@ Future<void> getInforUser() async {
 
   @override
   Widget build(BuildContext context) {
+    final String? userrole = StorageUtils.instance.getString(key: 'user_role');
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
@@ -362,6 +364,111 @@ Future<void> getInforUser() async {
                       ),
                       SizedBox(
                         height: 15.h,
+                      ),
+                      if (userrole == "Member")
+                      BlocProvider(
+                        create: (context) => RequestRoleBloc(),
+                        child: BlocListener<RequestRoleBloc, RequestRoleState>(
+                          listener: (context, state) {
+                            if (state is RequestRoleSuccess) {
+                              showCustomDialogModal(
+                                context: navigatorKey.currentContext!,
+                                textDesc: "Request lên Admin thành công",
+                                title: "Thông báo",
+                                colorButtonOk: Colors.green,
+                                btnOKText: "Xác nhận",
+                                typeDialog: "success",
+                                eventButtonOKPress: () {},
+                                isTwoButton: false,
+                              );
+                            } else if (state is RequestRoleFailure) {
+                              showDialog(
+                                context: navigatorKey.currentContext!,
+                                builder: (BuildContext context) {
+                                  return ErrorDialog(
+                                    eventConfirm: () {
+                                      Navigator.pop(context);
+                                    },
+                                  );
+                                },
+                              );
+                              log('Request Role Failure: ${state.message}');
+                            }
+                          },
+                          child: BlocBuilder<RequestRoleBloc, RequestRoleState>(
+                            builder: (context, state) {
+                              return InkWell(
+                                onTap: () {
+                                  showCustomDialogModal(
+                                    context: navigatorKey.currentContext!,
+                                    textDesc:
+                                        "Bạn có chắc muốn gửi yêu cầu lên Admin?",
+                                    title: "Thông báo",
+                                    colorButtonOk: Colors.blue,
+                                    btnOKText: "Xác nhận",
+                                    typeDialog: "question",
+                                    eventButtonOKPress: () {
+                                      final User? user =
+                                          FirebaseAuth.instance.currentUser;
+                                      if (user != null) {
+                                        context.read<RequestRoleBloc>().add(
+                                              RequestRole(
+                                                userId: user.uid,
+                                                email: user.email ?? '',
+                                                roleRequested: 'Admin',
+                                              ),
+                                            );
+                                      }
+                                    },
+                                    isTwoButton: true,
+                                  );
+                                },
+                                child: Padding(
+                                  padding: EdgeInsets.all(10.w),
+                                  child: Container(
+                                    padding: EdgeInsets.only(
+                                        top: 8.h, bottom: 8.h),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(5.r),
+                                      color: Colors.blue,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.grey.withOpacity(0.5),
+                                          spreadRadius: 2,
+                                          blurRadius: 4,
+                                          offset: const Offset(0, 3),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        TextApp(
+                                          text: "Request Lên Admin",
+                                          color: Colors.white,
+                                          fontsize: 14.sp,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        SizedBox(width: 5.w),
+                                        SizedBox(
+                                          width: 30.w,
+                                          height: 30.w,
+                                          child: const Icon(
+                                            Icons.person_add,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
                       ),
                       BlocProvider(
                         create: (context) => LogoutBloc(),
