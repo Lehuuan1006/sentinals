@@ -252,7 +252,7 @@ class _ManageUserState extends State<ManageUser>
                                       ),
                                       isDense: true,
                                       hintText:
-                                          "Tìm kiếm: $searchMethod",
+                                          "Nhập tên user: $searchMethod",
                                       contentPadding: const EdgeInsets.all(15),
                                     ),
                                     onFieldSubmitted: (value) {

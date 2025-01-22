@@ -296,7 +296,7 @@ class _ListUserRequestRoleScreenState extends State<ListUserRequestRoleScreen>
                                             BorderRadius.circular(8.r),
                                       ),
                                       isDense: true,
-                                      hintText: "Tìm kiếm: $searchMethod",
+                                      hintText: "Nhập tên user: $searchMethod",
                                       contentPadding: const EdgeInsets.all(15),
                                     ),
                                     onFieldSubmitted: (value) {

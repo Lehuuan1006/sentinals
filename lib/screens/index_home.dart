@@ -66,7 +66,6 @@ class _IndexHomeState extends State<IndexHome> {
 
   @override
   Widget build(BuildContext context) {
-    var screenWidth = MediaQuery.of(context).size.width;
     final String? userRole = StorageUtils.instance.getString(key: 'user_role');
     return Scaffold(
       backgroundColor: Colors.white,
@@ -77,7 +76,6 @@ class _IndexHomeState extends State<IndexHome> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         onPressed: () {
-          // Chuyển hướng đến màn hình ListUserScreen khi nhấn nút
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const ManageUser()),

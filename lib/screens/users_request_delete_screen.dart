@@ -212,7 +212,7 @@ class _ManageUserRequestDeleteState extends State<ManageUserRequestDelete>
                                       ),
                                       isDense: true,
                                       hintText:
-                                          "Tìm kiếm theo Email: $searchMethod",
+                                          "Nhập email user: $searchMethod",
                                       contentPadding: const EdgeInsets.all(15),
                                     ),
                                     onFieldSubmitted: (value) {
