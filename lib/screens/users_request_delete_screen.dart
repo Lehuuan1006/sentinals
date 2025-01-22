@@ -9,7 +9,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
-import 'package:sentinal/bloc/request_delete_users_list/request_delete_users_list_bloc.dart';
+import 'package:sentinal/bloc/list_request_delete_users/request_delete_users_list_bloc.dart';
 import 'package:sentinal/router/index.dart';
 import 'package:sentinal/utils/stogares.dart';
 import 'package:sentinal/widgets/custom_dialog.dart';

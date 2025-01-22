@@ -4,8 +4,9 @@ import 'package:sentinal/bloc/change_password/change_password_bloc.dart';
 import 'package:sentinal/bloc/get_infor_users/get_infor_users_bloc.dart';
 import 'package:sentinal/bloc/home/home_bloc.dart';
 import 'package:sentinal/bloc/list_user/list_user_bloc.dart';
+import 'package:sentinal/bloc/list_user_request_role/list_user_request_role_bloc.dart';
 import 'package:sentinal/bloc/request_delete_user/request_delete_user_bloc.dart';
-import 'package:sentinal/bloc/request_delete_users_list/request_delete_users_list_bloc.dart';
+import 'package:sentinal/bloc/list_request_delete_users/request_delete_users_list_bloc.dart';
 import 'package:sentinal/bloc/request_role/request_role_bloc.dart';
 import 'package:sentinal/bloc/update_infor_profile/update_infor_profile_bloc.dart';
 import 'package:sentinal/bloc/signin/signin_bloc.dart';
@@ -37,6 +38,8 @@ class AppBlocProvider extends StatelessWidget {
         BlocProvider(create: (_) => RequestDeleteUserBloc()),
         BlocProvider(create: (_) => RequestDeleteUsersListBloc()),
         BlocProvider(create: (_) => RequestRoleBloc()),
+        BlocProvider(create: (_) => ListRoleRequestBloc()),
+        BlocProvider(create: (_) => DeleteRoleRequestBloc()),
       ],
       child: child,
     );

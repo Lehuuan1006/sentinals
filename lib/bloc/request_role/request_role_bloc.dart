@@ -21,6 +21,7 @@ class RequestRoleBloc extends Bloc<RequestRoleEvent, RequestRoleState> {
     try {
       // Gửi dữ liệu đến Firestore
       await _firestore.collection('role_requests').add({
+        'contactName': event.contactName,
         'userId': event.userId,
         'email': event.email,
         'roleRequested': event.roleRequested,

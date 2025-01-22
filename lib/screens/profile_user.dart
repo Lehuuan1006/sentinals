@@ -413,6 +413,7 @@ Future<void> getInforUser() async {
                                       if (user != null) {
                                         context.read<RequestRoleBloc>().add(
                                               RequestRole(
+                                                contactName: contactName ?? '',
                                                 userId: user.uid,
                                                 email: user.email ?? '',
                                                 roleRequested: 'Admin',

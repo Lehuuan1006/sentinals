@@ -13,6 +13,7 @@ import 'package:sentinal/bloc/logout/logout_bloc.dart';
 import 'package:sentinal/router/index.dart';
 import 'package:sentinal/screens/camera.dart';
 import 'package:sentinal/screens/list_user.dart';
+import 'package:sentinal/screens/list_user_request_role_screen.dart';
 import 'package:sentinal/screens/notifications.dart';
 import 'package:sentinal/screens/users_manager_screen.dart';
 import 'package:sentinal/screens/users_request_delete_screen.dart';
@@ -500,7 +501,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     context,
                                                     MaterialPageRoute(
                                                       builder: (context) =>
-                                                          CameraScreen(),
+                                                          ListUserRequestRoleScreen(),
                                                     ),
                                                   );
                                                 },
