@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,10 +22,12 @@ import 'package:sentinal/screens/users_request_delete_screen.dart';
 import 'package:sentinal/utils/stogares.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sentinal/widgets/button_app.dart';
+import 'package:sentinal/widgets/chart_home.dart';
 import 'dart:developer';
 
 import 'package:sentinal/widgets/custom_dialog.dart';
 import 'package:sentinal/widgets/text_app.dart';
+import 'package:sentinal/widgets/title_menu_home.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -35,18 +39,22 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final ValueNotifier<double> _opacity = ValueNotifier<double>(1.0);
   final ScrollController _scrollController = ScrollController();
+  final CarouselSliderController _controller = CarouselSliderController();
 
   String? userRole;
   String? contactName;
   String? role;
-
+  bool isShowDashBoard = false;
+  int _currentIndex = 0;
+  int memberCount = 0;
+  int adminCount = 0;
   String? profileImage; // Chuỗi base64
   @override
   void initState() {
     WidgetsFlutterBinding.ensureInitialized();
     init();
     _scrollController.addListener(_onScroll);
-
+    countUsers();
     super.initState();
   }
 
@@ -77,6 +85,97 @@ class _HomeScreenState extends State<HomeScreen> {
       // Xử lý trường hợp userId là null hoặc rỗng
       log('User ID is null or empty');
     }
+  }
+
+  void handleItemTap(int index) {
+    switch (index) {
+      case 0:
+        vibrate();
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => UserRegistrationChart()),
+        );
+
+        break;
+      case 1:
+        vibrate();
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const ListUserScreen()),
+        );
+        break;
+      case 2:
+        vibrate();
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const ListUserScreen()),
+        );
+        break;
+      case 3:
+        vibrate();
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const ListUserScreen()),
+        );
+        break;
+      case 4:
+        vibrate();
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ListUserScreen()),
+        );
+        break;
+      case 5:
+        vibrate();
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ListUserScreen()),
+        );
+
+        break;
+      case 6:
+        vibrate();
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ListUserScreen()),
+        );
+
+        break;
+      case 7:
+        vibrate();
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ListUserScreen()),
+        );
+        break;
+    }
+  }
+
+  Future<void> countUsers() async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+    // Đếm số lượng Member
+    QuerySnapshot membersSnapshot = await firestore
+        .collection('users')
+        .where('role', isEqualTo: 'Member')
+        .get();
+
+    // Đếm số lượng Admin
+    QuerySnapshot adminsSnapshot = await firestore
+        .collection('users')
+        .where('role', isEqualTo: 'Admin')
+        .get();
+
+    // Cập nhật trạng thái
+    setState(() {
+      memberCount = membersSnapshot.size;
+      adminCount = adminsSnapshot.size;
+    });
   }
 
   @override
@@ -493,7 +592,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                               _buildActionButton(
                                                 context: context,
                                                 scrolled: false,
-                                                icon: Icons.access_alarm_outlined,
+                                                icon:
+                                                    Icons.access_alarm_outlined,
                                                 label: "Test",
                                                 onTap: () {
                                                   vibrate();
@@ -549,6 +649,209 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               );
                             },
+                          ),
+                          SliverList(
+                            delegate: SliverChildBuilderDelegate(
+                              (context, index) => Column(
+                                children: [
+                                  SizedBox(
+                                    height: 20.h,
+                                  ),
+                                  Container(
+                                    width: 1.sw,
+                                    child: Column(
+                                      children: [
+                                        CarouselSlider(
+                                          carouselController: _controller,
+                                          options: CarouselOptions(
+                                            aspectRatio: 2.0,
+                                            viewportFraction: 1,
+                                            enlargeCenterPage: true,
+                                            enableInfiniteScroll: false,
+                                            onPageChanged: (index, reason) {
+                                              setState(() {
+                                                _currentIndex = index;
+                                              });
+                                            },
+                                          ),
+                                          items: [
+                                            //Tab Menu Tab 1
+                                            GridView.builder(
+                                              shrinkWrap: true,
+                                              physics:
+                                                  const NeverScrollableScrollPhysics(),
+                                              gridDelegate:
+                                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                                crossAxisCount:
+                                                    4, // Number of columns
+                                                crossAxisSpacing: 4.0,
+                                                mainAxisSpacing: 4.0,
+                                              ),
+                                              itemCount: iconListMiniMenuTab1
+                                                  .length, // Number of items in the grid
+                                              itemBuilder: (context, index) {
+                                                return InkWell(
+                                                  onTap: () {
+                                                    handleItemTap(index);
+                                                  },
+                                                  child: Column(
+                                                    children: [
+                                                      Container(
+                                                        width: 50.w,
+                                                        height: 50.w,
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      8.r),
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .colorScheme
+                                                                  .primary,
+                                                        ),
+                                                        child: Center(
+                                                          child: Icon(
+                                                            size: 24.sp,
+                                                            iconListMiniMenuTab1[
+                                                                index],
+                                                            color: Colors.white,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        height: 5.h,
+                                                      ),
+                                                      SizedBox(
+                                                        width: 75.w,
+                                                        child: TextApp(
+                                                          isOverFlow: false,
+                                                          softWrap: true,
+                                                          textAlign:
+                                                              TextAlign.center,
+                                                          text:
+                                                              titleMiniMenuTab1[
+                                                                  index],
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontsize: 12.sp,
+                                                          color: Colors.black,
+                                                          maxLines: 3,
+                                                        ),
+                                                      )
+                                                    ],
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                  ),
+
+                                  // Other widgets below the GridView
+                                  SizedBox(height: 10.h),
+
+                                  Padding(
+                                    padding: EdgeInsets.all(20.w),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            TextApp(
+                                              text: "Biểu đồ tổng quan",
+                                              fontWeight: FontWeight.bold,
+                                              fontsize: 16.sp,
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.only(
+                                        left: 20.w, right: 20.w),
+                                    child: Divider(
+                                      height: 1,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  // isShowDashBoard
+                                  //     ?
+                                  Padding(
+                                    padding: EdgeInsets.all(20.w),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                TextApp(
+                                                  text: "Tổng Admin: ",
+                                                  fontWeight: FontWeight.bold,
+                                                  fontsize: 16.sp,
+                                                ),
+                                                TextApp(
+                                                  text: adminCount.toString(),
+                                                  fontsize: 16.sp,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .primary,
+                                                )
+                                              ],
+                                            ),
+                                            Row(
+                                              children: [
+                                                TextApp(
+                                                  text: "Tổng Member: ",
+                                                  fontWeight: FontWeight.bold,
+                                                  fontsize: 16.sp,
+                                                ),
+                                                Container(
+                                                  width: 70.w,
+                                                  child: TextApp(
+                                                    text:
+                                                        memberCount.toString(),
+                                                    fontsize: 16.sp,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .primary,
+                                                  ),
+                                                )
+                                              ],
+                                            )
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  UserRegistrationChart(),
+                                  SizedBox(
+                                    height: 30.h,
+                                  ),
+                                ],
+                              ),
+                              childCount: 1,
+                            ),
                           ),
                         ],
                       ),
