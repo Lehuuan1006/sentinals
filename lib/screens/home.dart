@@ -93,7 +93,7 @@ class _HomeScreenState extends State<HomeScreen> {
         vibrate();
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => UserRegistrationChart()),
+          MaterialPageRoute(builder: (context) => ManageUser()),
         );
 
         break;
@@ -102,7 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const ListUserScreen()),
+          MaterialPageRoute(builder: (context) => const ListUserRequestRoleScreen()),
         );
         break;
       case 2:
@@ -110,7 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const ListUserScreen()),
+          MaterialPageRoute(builder: (context) => const ManageUserRequestDelete()),
         );
         break;
       case 3:
@@ -126,7 +126,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ListUserScreen()),
+          MaterialPageRoute(builder: (context) => ManageUser()),
         );
         break;
       case 5:
@@ -150,7 +150,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ListUserScreen()),
+          MaterialPageRoute(builder: (context) => ListUserRequestRoleScreen()),
         );
         break;
     }
@@ -514,142 +514,142 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ),
                           ),
-                          SliverLayoutBuilder(
-                            builder: (BuildContext context, constraints) {
-                              final scrolled = constraints.scrollOffset > 0;
-                              return SliverAppBar(
-                                shadowColor: Colors.white,
-                                surfaceTintColor: Colors.white,
-                                foregroundColor: Colors.white,
-                                bottom: PreferredSize(
-                                  preferredSize: Size.fromHeight(10.h),
-                                  child: Container(),
-                                ),
-                                expandedHeight: 140.h,
-                                pinned: true,
-                                floating: false,
-                                backgroundColor: scrolled
-                                    ? Colors.white
-                                    : Colors.transparent,
-                                flexibleSpace: Stack(
-                                  children: [
-                                    // Hình nền
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(15.r),
-                                      child: Container(
-                                        margin: EdgeInsets.all(10.w),
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(15.r),
-                                            color: const Color.fromARGB(
-                                                255, 54, 193, 240)
-                                            // gradient: LinearGradient(
-                                            //   colors: [
-                                            //     Color.fromARGB(255, 111, 248, 248),
-                                            //     Color.fromARGB(255, 175, 242, 242),
-                                            //   ],
-                                            //   begin: Alignment.topLeft,
-                                            //   end: Alignment.bottomRight,
-                                            // ),
-                                            ),
-                                      ),
-                                    ),
-                                    // Các nút chức năng
-                                    Positioned(
-                                      top: 0,
-                                      bottom: 0,
-                                      left: 0,
-                                      right: 0,
-                                      child: Container(
-                                        padding: EdgeInsets.only(
-                                            top: 30.h,
-                                            bottom: 30
-                                                .h), // Điều chỉnh padding trên và dưới
-                                        child: Center(
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: [
-                                              _buildActionButton(
-                                                context: context,
-                                                scrolled: false,
-                                                icon: Icons.list,
-                                                label: "List Users",
-                                                onTap: () {
-                                                  vibrate();
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          ManageUser(),
-                                                    ),
-                                                  );
-                                                },
-                                              ),
-                                              SizedBox(width: 20.w),
-                                              _buildActionButton(
-                                                context: context,
-                                                scrolled: false,
-                                                icon:
-                                                    Icons.access_alarm_outlined,
-                                                label: "Test",
-                                                onTap: () {
-                                                  vibrate();
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          ListUserRequestRoleScreen(),
-                                                    ),
-                                                  );
-                                                },
-                                              ),
-                                              SizedBox(width: 20.w),
-                                              _buildActionButton(
-                                                context: context,
-                                                scrolled: false,
-                                                icon: Icons.camera,
-                                                label: "Testt",
-                                                onTap: () {
-                                                  vibrate();
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          const ListUserScreen(),
-                                                    ),
-                                                  );
-                                                },
-                                              ),
-                                              SizedBox(width: 20.w),
-                                              _buildActionButton(
-                                                context: context,
-                                                scrolled: false,
-                                                icon: Icons.info,
-                                                label: "Testtt",
-                                                onTap: () {
-                                                  vibrate();
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          const ManageUserRequestDelete(),
-                                                    ),
-                                                  );
-                                                },
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                          ),
+                          // SliverLayoutBuilder(
+                          //   builder: (BuildContext context, constraints) {
+                          //     final scrolled = constraints.scrollOffset > 0;
+                          //     return SliverAppBar(
+                          //       shadowColor: Colors.white,
+                          //       surfaceTintColor: Colors.white,
+                          //       foregroundColor: Colors.white,
+                          //       bottom: PreferredSize(
+                          //         preferredSize: Size.fromHeight(10.h),
+                          //         child: Container(),
+                          //       ),
+                          //       expandedHeight: 140.h,
+                          //       pinned: true,
+                          //       floating: false,
+                          //       backgroundColor: scrolled
+                          //           ? Colors.white
+                          //           : Colors.transparent,
+                          //       flexibleSpace: Stack(
+                          //         children: [
+                          //           // Hình nền
+                          //           ClipRRect(
+                          //             borderRadius: BorderRadius.circular(15.r),
+                          //             child: Container(
+                          //               margin: EdgeInsets.all(10.w),
+                          //               decoration: BoxDecoration(
+                          //                   borderRadius:
+                          //                       BorderRadius.circular(15.r),
+                          //                   color: const Color.fromARGB(
+                          //                       255, 54, 193, 240)
+                          //                   // gradient: LinearGradient(
+                          //                   //   colors: [
+                          //                   //     Color.fromARGB(255, 111, 248, 248),
+                          //                   //     Color.fromARGB(255, 175, 242, 242),
+                          //                   //   ],
+                          //                   //   begin: Alignment.topLeft,
+                          //                   //   end: Alignment.bottomRight,
+                          //                   // ),
+                          //                   ),
+                          //             ),
+                          //           ),
+                          //           // Các nút chức năng
+                          //           Positioned(
+                          //             top: 0,
+                          //             bottom: 0,
+                          //             left: 0,
+                          //             right: 0,
+                          //             child: Container(
+                          //               padding: EdgeInsets.only(
+                          //                   top: 30.h,
+                          //                   bottom: 30
+                          //                       .h), // Điều chỉnh padding trên và dưới
+                          //               child: Center(
+                          //                 child: Row(
+                          //                   mainAxisAlignment:
+                          //                       MainAxisAlignment.center,
+                          //                   crossAxisAlignment:
+                          //                       CrossAxisAlignment.center,
+                          //                   children: [
+                          //                     _buildActionButton(
+                          //                       context: context,
+                          //                       scrolled: false,
+                          //                       icon: Icons.list,
+                          //                       label: "List Users",
+                          //                       onTap: () {
+                          //                         vibrate();
+                          //                         Navigator.push(
+                          //                           context,
+                          //                           MaterialPageRoute(
+                          //                             builder: (context) =>
+                          //                                 ManageUser(),
+                          //                           ),
+                          //                         );
+                          //                       },
+                          //                     ),
+                          //                     SizedBox(width: 20.w),
+                          //                     _buildActionButton(
+                          //                       context: context,
+                          //                       scrolled: false,
+                          //                       icon:
+                          //                           Icons.access_alarm_outlined,
+                          //                       label: "Test",
+                          //                       onTap: () {
+                          //                         vibrate();
+                          //                         Navigator.push(
+                          //                           context,
+                          //                           MaterialPageRoute(
+                          //                             builder: (context) =>
+                          //                                 ListUserRequestRoleScreen(),
+                          //                           ),
+                          //                         );
+                          //                       },
+                          //                     ),
+                          //                     SizedBox(width: 20.w),
+                          //                     _buildActionButton(
+                          //                       context: context,
+                          //                       scrolled: false,
+                          //                       icon: Icons.camera,
+                          //                       label: "Testt",
+                          //                       onTap: () {
+                          //                         vibrate();
+                          //                         Navigator.push(
+                          //                           context,
+                          //                           MaterialPageRoute(
+                          //                             builder: (context) =>
+                          //                                 const ListUserScreen(),
+                          //                           ),
+                          //                         );
+                          //                       },
+                          //                     ),
+                          //                     SizedBox(width: 20.w),
+                          //                     _buildActionButton(
+                          //                       context: context,
+                          //                       scrolled: false,
+                          //                       icon: Icons.info,
+                          //                       label: "Testtt",
+                          //                       onTap: () {
+                          //                         vibrate();
+                          //                         Navigator.push(
+                          //                           context,
+                          //                           MaterialPageRoute(
+                          //                             builder: (context) =>
+                          //                                 const ManageUserRequestDelete(),
+                          //                           ),
+                          //                         );
+                          //                       },
+                          //                     ),
+                          //                   ],
+                          //                 ),
+                          //               ),
+                          //             ),
+                          //           ),
+                          //         ],
+                          //       ),
+                          //     );
+                          //   },
+                          // ),
                           SliverList(
                             delegate: SliverChildBuilderDelegate(
                               (context, index) => Column(

@@ -37,10 +37,12 @@ class _UserRegistrationChartState extends State<UserRegistrationChart> {
 
       int userCount = usersSnapshot.docs.length;
 
-      setState(() {
-        userCounts[formattedDate] = userCount;
-        days.add(formattedDate);
-      });
+      if (mounted) {
+        setState(() {
+          userCounts[formattedDate] = userCount;
+          days.add(formattedDate);
+        });
+      }
     }
   }
 
