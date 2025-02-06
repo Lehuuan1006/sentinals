@@ -56,6 +56,22 @@ class _UserRegistrationChartState extends State<UserRegistrationChart> {
           BarChartData(
             alignment: BarChartAlignment.spaceAround,
             barGroups: getData(),
+            barTouchData: BarTouchData(
+              touchTooltipData: BarTouchTooltipData(
+                tooltipPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                  return BarTooltipItem(
+                    rod.toY
+                        .toInt()
+                        .toString(),
+                    TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: const Color.fromARGB(255, 80, 231, 233)),
+                  );
+                },
+              ),
+            ),
             titlesData: FlTitlesData(
               leftTitles: AxisTitles(
                 sideTitles: SideTitles(

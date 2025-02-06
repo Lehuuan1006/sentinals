@@ -15,7 +15,7 @@ List<IconData> iconList = [
 ];
 
 List<IconData> iconListMiniMenuTab1 = [
-  Icons.create_new_folder,
+  Icons.list,
   Icons.airplane_ticket,
   Icons.history,
   Icons.lock,
@@ -26,7 +26,7 @@ List<IconData> iconListMiniMenuTab1 = [
 ];
 
 List<String> titleMiniMenuTab1 = [
-  "Test",
+  "List Users",
   "Test1",
   "Test2",
   "Test3",
