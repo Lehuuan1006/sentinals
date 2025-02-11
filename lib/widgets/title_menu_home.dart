@@ -27,7 +27,7 @@ List<IconData> iconListMiniMenuTab1 = [
 
 List<String> titleMiniMenuTab1 = [
   "List Users",
-  "Test1",
+  "Camera",
   "Test2",
   "Test3",
   "Test4",

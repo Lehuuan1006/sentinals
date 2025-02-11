@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sentinal/screens/camera.dart';
 import 'package:sentinal/screens/home.dart';
-import 'package:sentinal/screens/list_user.dart';
+import 'package:sentinal/screens/device_manager.dart';
 import 'package:sentinal/screens/notifications.dart';
 import 'package:sentinal/screens/profile_user.dart';
 import 'package:sentinal/screens/users_manager_screen.dart';

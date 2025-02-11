@@ -14,7 +14,7 @@ import 'package:sentinal/bloc/home/home_bloc.dart';
 import 'package:sentinal/bloc/logout/logout_bloc.dart';
 import 'package:sentinal/router/index.dart';
 import 'package:sentinal/screens/camera.dart';
-import 'package:sentinal/screens/list_user.dart';
+import 'package:sentinal/screens/device_manager.dart';
 import 'package:sentinal/screens/list_user_request_role_screen.dart';
 import 'package:sentinal/screens/notifications.dart';
 import 'package:sentinal/screens/users_manager_screen.dart';
@@ -102,7 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const ListUserRequestRoleScreen()),
+          MaterialPageRoute(builder: (context) => const CameraScreen()),
         );
         break;
       case 2:
@@ -118,7 +118,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const ListUserScreen()),
+          MaterialPageRoute(builder: (context) =>  DeviceManager()),
         );
         break;
       case 4:
@@ -133,7 +133,7 @@ class _HomeScreenState extends State<HomeScreen> {
         vibrate();
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ListUserScreen()),
+          MaterialPageRoute(builder: (context) => DeviceManager()),
         );
 
         break;
@@ -141,7 +141,7 @@ class _HomeScreenState extends State<HomeScreen> {
         vibrate();
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ListUserScreen()),
+          MaterialPageRoute(builder: (context) => DeviceManager()),
         );
 
         break;
