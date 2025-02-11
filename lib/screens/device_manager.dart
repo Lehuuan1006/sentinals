@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 class DeviceManager extends StatefulWidget {
   @override
@@ -8,11 +9,48 @@ class DeviceManager extends StatefulWidget {
 class _DeviceManagerState extends State<DeviceManager> {
   bool fanState = false;
   bool lightState = false;
+  String recordedText = "Nhấn ghi âm để bắt đầu";
+  stt.SpeechToText _speech = stt.SpeechToText();
+  bool _isListening = false;
 
   void _setAllDevicesState(bool state) {
     setState(() {
       fanState = state;
       lightState = state;
+    });
+  }
+
+  void _startListening() async {
+    bool available = await _speech.initialize();
+    if (available) {
+      setState(() => _isListening = true);
+      _speech.listen(
+        onResult: (result) {
+          setState(() {
+            recordedText = result.recognizedWords.isNotEmpty
+                ? result.recognizedWords
+                : "...";
+          });
+        },
+        onSoundLevelChange: (level) {
+          if (level < 0.1) {
+            Future.delayed(Duration(seconds: 2), () {
+              if (!_speech.isListening) {
+                setState(() {
+                  _isListening = false;
+                });
+              }
+            });
+          }
+        },
+      );
+    }
+  }
+
+  void _stopListening() {
+    _speech.stop();
+    setState(() {
+      _isListening = false;
     });
   }
 
@@ -99,16 +137,38 @@ class _DeviceManagerState extends State<DeviceManager> {
             Padding(
               padding:
                   const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+              child: Column(
                 children: [
-                  ElevatedButton(
-                    onPressed: () => _setAllDevicesState(false),
-                    child: const Text("Tắt tất cả"),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () => _setAllDevicesState(false),
+                        child: const Text("Tắt tất cả"),
+                      ),
+                      ElevatedButton(
+                        onPressed: () => _setAllDevicesState(true),
+                        child: const Text("Bật tất cả"),
+                      ),
+                    ],
                   ),
+                  const SizedBox(height: 20),
                   ElevatedButton(
-                    onPressed: () => _setAllDevicesState(true),
-                    child: const Text("Bật tất cả"),
+                    onPressed: _isListening ? _stopListening : _startListening,
+                    child: Text(_isListening ? "Dừng ghi âm" : "Ghi âm"),
+                  ),
+                  const SizedBox(height: 10),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    margin: const EdgeInsets.symmetric(horizontal: 16),
+                    decoration: BoxDecoration(
+                      color: Colors.black,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      recordedText,
+                      style: const TextStyle(fontSize: 16),
+                    ),
                   ),
                 ],
               ),
