@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:url_launcher/url_launcher.dart';
 
 class DeviceManager extends StatefulWidget {
   @override
@@ -24,13 +26,16 @@ class _DeviceManagerState extends State<DeviceManager> {
   void initState() {
     super.initState();
     _loadKeywords();
+    _checkPermissions();
   }
+
   void _setAllDevicesState(bool state) {
     setState(() {
       fanState = state;
       lightState = state;
     });
   }
+
   Future<void> _loadKeywords() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -45,6 +50,61 @@ class _DeviceManagerState extends State<DeviceManager> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString(key, value);
     _loadKeywords();
+  }
+
+  Future<void> _checkPermissions() async {
+    var status = await Permission.microphone.status;
+    if (!status.isGranted) {
+      await Permission.microphone.request();
+    }
+
+    if (!await _isGoogleAppInstalled()) {
+      _showGoogleAppInstallDialog();
+    }
+  }
+
+  Future<bool> _isGoogleAppInstalled() async {
+    const url = 'com.google.android.googlequicksearchbox';
+    final bool isInstalled = await canLaunch(url);
+    return isInstalled;
+  }
+
+  void _showGoogleAppInstallDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Thông báo"),
+          content: Text(
+              "Bạn cần cài đặt ứng dụng Google để sử dụng tính năng chuyển đổi giọng nói thành văn bản."),
+          actions: <Widget>[
+            TextButton(
+              child: Text("Hủy"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text("Cài đặt"),
+              onPressed: () {
+                _launchGoogleAppInstall();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _launchGoogleAppInstall() async {
+    const url =
+        'https://play.google.com/store/apps/details?id=com.google.android.googlequicksearchbox';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Không thể mở liên kết';
+    }
   }
 
   void _startListening() async {
@@ -75,6 +135,26 @@ class _DeviceManagerState extends State<DeviceManager> {
     }
   }
 
+  void _handleVoiceCommand(String command) {
+    if (command.contains(keywords["fan_on"]!)) {
+      setState(() {
+        fanState = true;
+      });
+    } else if (command.contains(keywords["fan_off"]!)) {
+      setState(() {
+        fanState = false;
+      });
+    } else if (command.contains(keywords["light_on"]!)) {
+      setState(() {
+        lightState = true;
+      });
+    } else if (command.contains(keywords["light_off"]!)) {
+      setState(() {
+        lightState = false;
+      });
+    }
+  }
+
   void _stopListening() {
     _speech.stop();
     setState(() {
@@ -82,22 +162,14 @@ class _DeviceManagerState extends State<DeviceManager> {
     });
   }
 
-  void _handleVoiceCommand(String command) {
-    setState(() {
-      if (command == keywords["fan_on"]) {
-        fanState = true;
-      } else if (command == keywords["fan_off"]) {
-        fanState = false;
-      } else if (command == keywords["light_on"]) {
-        lightState = true;
-      } else if (command == keywords["light_off"]) {
-        lightState = false;
-      }
-    });
-  }
-
-  Widget buildDeviceBlock(String deviceName, bool value, String imageOn,
-      String imageOff, ValueChanged<bool> onChanged, String keyOn, String keyOff) {
+  Widget buildDeviceBlock(
+      String deviceName,
+      bool value,
+      String imageOn,
+      String imageOff,
+      ValueChanged<bool> onChanged,
+      String keyOn,
+      String keyOff) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
@@ -114,7 +186,8 @@ class _DeviceManagerState extends State<DeviceManager> {
             children: [
               Row(
                 children: [
-                  Image.asset(value ? imageOn : imageOff, width: 80, height: 80),
+                  Image.asset(value ? imageOn : imageOff,
+                      width: 80, height: 80),
                   const SizedBox(width: 20),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -142,7 +215,8 @@ class _DeviceManagerState extends State<DeviceManager> {
                   Text("Turn on mode: ${keywords[keyOn]}"),
                   TextButton(
                     onPressed: () async {
-                      String? newKeyword = await _showKeywordDialog(context, keyOn);
+                      String? newKeyword =
+                          await _showKeywordDialog(context, keyOn);
                       if (newKeyword != null) _saveKeyword(keyOn, newKeyword);
                     },
                     child: Text("Edit"),
@@ -155,7 +229,8 @@ class _DeviceManagerState extends State<DeviceManager> {
                   Text("Turn off mode: ${keywords[keyOff]}"),
                   TextButton(
                     onPressed: () async {
-                      String? newKeyword = await _showKeywordDialog(context, keyOff);
+                      String? newKeyword =
+                          await _showKeywordDialog(context, keyOff);
                       if (newKeyword != null) _saveKeyword(keyOff, newKeyword);
                     },
                     child: Text("Edit"),
@@ -175,8 +250,15 @@ class _DeviceManagerState extends State<DeviceManager> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text("Insert new key", style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black)),
-          content: TextField(controller: controller),
+          title: Text("Insert new key",
+              style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black)),
+          content: TextField(
+            controller: controller,
+            style: TextStyle(color: Colors.black),
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, null),
@@ -204,54 +286,56 @@ class _DeviceManagerState extends State<DeviceManager> {
                 child: Column(
                   children: [
                     buildDeviceBlock(
-                      "Fan", fanState, "assets/images/fan_on.png",
-                      "assets/images/fan_off.png", (newValue) {
-                        setState(() {
-                          fanState = newValue;
-                        });
-                      }, "fan_on", "fan_off"
-                    ),
+                        "Fan",
+                        fanState,
+                        "assets/images/fan_on.png",
+                        "assets/images/fan_off.png", (newValue) {
+                      setState(() {
+                        fanState = newValue;
+                      });
+                    }, "fan_on", "fan_off"),
                     buildDeviceBlock(
-                      "Light", lightState, "assets/images/light_on.png",
-                      "assets/images/light_off.png", (newValue) {
-                        setState(() {
-                          lightState = newValue;
-                        });
-                      }, "light_on", "light_off"
-                    ),
+                        "Light",
+                        lightState,
+                        "assets/images/light_on.png",
+                        "assets/images/light_off.png", (newValue) {
+                      setState(() {
+                        lightState = newValue;
+                      });
+                    }, "light_on", "light_off"),
                   ],
                 ),
               ),
             ),
             Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () => _setAllDevicesState(false),
-                        child: const Text("Turn off all"),
-                      ),
-                      ElevatedButton(
-                        onPressed: () => _setAllDevicesState(true),
-                        child: const Text("Turn on all"),
-                      ),
-                    ],
-                  ),
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                ElevatedButton(
+                  onPressed: () => _setAllDevicesState(false),
+                  child: const Text("Turn off all"),
+                ),
+                ElevatedButton(
+                  onPressed: () => _setAllDevicesState(true),
+                  child: const Text("Turn on all"),
+                ),
+              ],
+            ),
             ElevatedButton(
               onPressed: _isListening ? _stopListening : _startListening,
-              child: Text(_isListening ? "Stop recored" : "Record"),  
+              child: Icon(_isListening ? Icons.mic : Icons.mic_off),
             ),
             Container(
-                    padding: const EdgeInsets.all(12),
-                    margin: const EdgeInsets.symmetric(horizontal: 16),
-                    decoration: BoxDecoration(
-                      color: Colors.black,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
-                      recordedText,
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                  ),
+              padding: const EdgeInsets.all(12),
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                color: Colors.black,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                recordedText,
+                style: const TextStyle(fontSize: 16),
+              ),
+            ),
           ],
         ),
       ),

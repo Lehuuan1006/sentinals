@@ -164,8 +164,8 @@ class _ManageUserState extends State<ManageUser>
             if (state is ListUserStateLoading) {
               return Center(
                 child: SizedBox(
-                  width: 100.w,
-                  height: 100.w,
+                  width: 250.w,
+                  height: 250.w,
                   child: Lottie.asset('assets/lotties/loading_sentinal.json'),
                 ),
               );
