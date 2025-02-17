@@ -1,5 +1,8 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:sentinal/router/index.dart';
+import 'package:sentinal/widgets/custom_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:url_launcher/url_launcher.dart';
@@ -34,6 +37,8 @@ class _DeviceManagerState extends State<DeviceManager> {
       fanState = state;
       lightState = state;
     });
+    updateDeviceState('fan', state);
+    updateDeviceState('light', state);
   }
 
   Future<void> _loadKeywords() async {
@@ -57,10 +62,6 @@ class _DeviceManagerState extends State<DeviceManager> {
     if (!status.isGranted) {
       await Permission.microphone.request();
     }
-
-    if (!await _isGoogleAppInstalled()) {
-      _showGoogleAppInstallDialog();
-    }
   }
 
   Future<bool> _isGoogleAppInstalled() async {
@@ -70,44 +71,29 @@ class _DeviceManagerState extends State<DeviceManager> {
   }
 
   void _showGoogleAppInstallDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Thông báo"),
-          content: Text(
-              "Bạn cần cài đặt ứng dụng Google để sử dụng tính năng chuyển đổi giọng nói thành văn bản."),
-          actions: <Widget>[
-            TextButton(
-              child: Text("Hủy"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: Text("Cài đặt"),
-              onPressed: () {
-                _launchGoogleAppInstall();
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
+    showCustomDialogModal(
+      context: navigatorKey.currentContext!,
+      textDesc:
+          "Để dùng chức năng nhận diện giọng nói, bạn cần cài đặt ứng dụng Google và bật quyền truy cập micro",
+      title: "Thông báo",
+      colorButtonOk: Colors.blue,
+      btnOKText: "Xác nhận",
+      typeDialog: "info",
+      eventButtonOKPress: () {},
+      isTwoButton: true,
     );
   }
 
-  Future<void> _launchGoogleAppInstall() async {
-    const url =
-        'https://play.google.com/store/apps/details?id=com.google.android.googlequicksearchbox';
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Không thể mở liên kết';
-    }
+  void updateDeviceState(String device, bool state) {
+    DatabaseReference ref =
+        FirebaseDatabase.instance.ref().child('devices').child(device);
+    ref.set(state ? 1 : 0);
   }
 
   void _startListening() async {
+    if (!await _isGoogleAppInstalled()) {
+      _showGoogleAppInstallDialog();
+    }
     bool available = await _speech.initialize();
     if (available) {
       setState(() => _isListening = true);
@@ -140,18 +126,22 @@ class _DeviceManagerState extends State<DeviceManager> {
       setState(() {
         fanState = true;
       });
+      updateDeviceState('fan', true);
     } else if (command.contains(keywords["fan_off"]!)) {
       setState(() {
         fanState = false;
       });
+      updateDeviceState('fan', false);
     } else if (command.contains(keywords["light_on"]!)) {
       setState(() {
         lightState = true;
       });
+      updateDeviceState('light', true);
     } else if (command.contains(keywords["light_off"]!)) {
       setState(() {
         lightState = false;
       });
+      updateDeviceState('light', false);
     }
   }
 
@@ -203,7 +193,10 @@ class _DeviceManagerState extends State<DeviceManager> {
                       const SizedBox(height: 10),
                       Switch(
                         value: value,
-                        onChanged: onChanged,
+                        onChanged: (newValue) {
+                          onChanged(newValue);
+                          updateDeviceState(deviceName.toLowerCase(), newValue);
+                        },
                       ),
                     ],
                   ),
