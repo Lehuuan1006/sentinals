@@ -64,7 +64,7 @@ class _CameraScreenState extends State<CameraScreen> {
                   : const Center(
                       child: Text(
                         'Camera is Off',
-                        style: TextStyle(fontSize: 18),
+                        style: TextStyle(fontSize: 18, color: Colors.black),
                       ),
                     ),
             ),
@@ -84,8 +84,8 @@ class _CameraScreenState extends State<CameraScreen> {
           Column(
             children: [
               const Text(
-                "Điều khiển Servo",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                "Camera Angle",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 119, 90, 131)),
               ),
               const SizedBox(height: 10),
 
