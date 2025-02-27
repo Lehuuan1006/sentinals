@@ -56,7 +56,7 @@ Sentinal is a real-time monitoring and control application that provides user ma
    ```
 2. Navigate to the project folder:
    ```sh
-   cd sentinal-app
+   cd sentinal
    ```
 3. Install dependencies:
    ```sh
