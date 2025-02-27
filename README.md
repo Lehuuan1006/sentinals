@@ -52,7 +52,7 @@ Sentinal is a real-time monitoring and control application that provides user ma
 ## Installation
 1. Clone this repository:
    ```sh
-   git clone https://github.com/your-repo/sentinal-app.git
+   git clone https://github.com/your-repo/sentinal.git
    ```
 2. Navigate to the project folder:
    ```sh
