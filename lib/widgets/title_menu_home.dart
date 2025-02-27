@@ -16,22 +16,22 @@ List<IconData> iconList = [
 
 List<IconData> iconListMiniMenuTab1 = [
   Icons.list,
-  Icons.airplane_ticket,
-  Icons.history,
-  Icons.lock,
-  Icons.qr_code,
-  Icons.qr_code,
-  Icons.qr_code,
-  Icons.qr_code,
+  Icons.camera_enhance,
+  Icons.devices_sharp,
+  Icons.delete,
+  Icons.list,
+  Icons.list,
+  Icons.list,
+  Icons.list,
 ];
 
 List<String> titleMiniMenuTab1 = [
   "List Users",
   "Camera",
-  "Test2",
-  "Test3",
+  "Device Manager",
+  "Delete Request",
   "Test4",
   "Test5",
   "Test6",
-  "Test7",
+  "Request Role",
 ];

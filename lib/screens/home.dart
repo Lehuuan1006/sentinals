@@ -74,15 +74,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> getInforUser() async {
-    // Lấy userId từ FirebaseAuth
     final User? user = FirebaseAuth.instance.currentUser;
     final String? userId = user?.uid;
 
     if (userId != null && userId.isNotEmpty) {
-      // Gửi sự kiện GetProfileInfo đến GetInforProfileBloc với userId
       context.read<GetInforProfileBloc>().add(GetProfileInfo(userId: userId));
     } else {
-      // Xử lý trường hợp userId là null hoặc rỗng
       log('User ID is null or empty');
     }
   }
@@ -110,7 +107,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const ManageUserRequestDelete()),
+          MaterialPageRoute(builder: (context) => DeviceManager()),
         );
         break;
       case 3:
@@ -118,7 +115,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) =>  DeviceManager()),
+          MaterialPageRoute(
+              builder: (context) => const ManageUserRequestDelete()),
         );
         break;
       case 4:
@@ -697,8 +695,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   child: Column(
                                                     children: [
                                                       Container(
-                                                        width: 50.w,
-                                                        height: 50.w,
+                                                        width: 40.w,
+                                                        height: 40.w,
                                                         decoration:
                                                             BoxDecoration(
                                                           borderRadius:
@@ -712,7 +710,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         ),
                                                         child: Center(
                                                           child: Icon(
-                                                            size: 24.sp,
+                                                            size: 22.sp,
                                                             iconListMiniMenuTab1[
                                                                 index],
                                                             color: Colors.white,
@@ -749,9 +747,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ],
                                     ),
                                   ),
-
-                                  // Other widgets below the GridView
-                                  SizedBox(height: 10.h),
 
                                   Padding(
                                     padding: EdgeInsets.all(20.w),

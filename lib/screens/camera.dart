@@ -46,7 +46,7 @@ class _CameraScreenState extends State<CameraScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('ESP32-CAM Stream'),
+        title: const Text('CAMERA Stream'),
       ),
       body: Column(
         children: [

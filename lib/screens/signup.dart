@@ -186,7 +186,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         height: 5,
                       ),
                       Text(
-                        "Nhập thông tin khách hàng để đăng nhập",
+                        "Nhập thông tin để đăng kí",
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
