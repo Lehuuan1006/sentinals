@@ -15,32 +15,32 @@ Sentinal is a real-time monitoring and control application that provides user ma
 - Displays the logged-in user’s information.
 - Provides navigation to different functionalities.
 - Features a chart displaying the number of user registrations per day over the last 30 days.  
-<img src="assets/images/home.png" width="300" height="200">
+<img src="assets/images/home.png" width="300" height="500">
 
 ### 2. Camera Screen
 - Streams live video from an ESP32-CAM.
 - Includes four directional buttons to adjust the camera’s position.  
-<img src="assets/images/camera.png" width="300" height="200">
+<img src="assets/images/camera.png" width="300" height="500">
 
 ### 3. Device Manager Screen
 - Allows users to control connected devices using on-screen buttons.
 - Supports customizable voice commands to toggle device states.  
-<img src="assets/images/device_manager.png" width="300" height="200">
+<img src="assets/images/device_manager.png" width="300" height="500">
 
 ### 4. User Management Screen
 - Displays a list of registered users.
 - Enables administrators to edit or delete user information.  
-<img src="assets/images/list_users.png" width="300" height="200">
+<img src="assets/images/list_users.png" width="300" height="500">
 
 ### 5. Personal Info Screen
 - Allows users to edit personal information.
 - Enable fingerprint login and change passwords.  
-<img src="assets/images/personal_info.png" width="300" height="200">
+<img src="assets/images/personal_info.png" width="300" height="500">
 
 ### 6. SignIn and SignUp Screen  
-<img src="assets/images/signin.png" width="300" height="200">  
-<img src="assets/images/signup1.png" width="300" height="200">  
-<img src="assets/images/signup2.png" width="300" height="200">
+<img src="assets/images/signin.png" width="300" height="500">  
+<img src="assets/images/signup1.png" width="300" height="500">  
+<img src="assets/images/signup2.png" width="300" height="500">
 
 
 ## Technology Stack
